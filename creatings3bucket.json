@@ -3,7 +3,8 @@
 		"mybucket":{
 			"Type":"AWS::S3::Bucket",
 			"Properties":{ 
-			    "BucketName":"Thisisacfpracticebucket"
+			    "BucketName":"Thisisacfpracticebucket",
+				"username":"bibek"
 			}
 		}
 	}
