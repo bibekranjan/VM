@@ -1,10 +1,13 @@
 {
 	"Resources":{
 		"mybucket":{
-			"Type":"AWS::S3::Bucket",
+			"Type":"AWS::S4::Bucket",
 			"Properties":{ 
 			    "BucketName":"Thisisacfpracticebucket",
-				"username":"bibek"
+				"username":"bibek",
+				"user":"jay",
+				"place":"BTM",
+				"roll":"QF"
 			}
 		}
 	}
