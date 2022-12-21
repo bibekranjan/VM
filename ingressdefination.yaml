@@ -1,34 +1,54 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-helloworld
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: bibek.behera@neutrinos.co
+    privateKeySecretRef:
+      name: letsencrypt-helloworld
+    solvers:
+    - http01:
+       ingress:
+         class: nginx
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: letsencrypt-helloworld
+  namespace: ingress-test
+spec:
+  dnsNames:
+    - hello-world.rtechworld.xyz
+  secretName: letsencrypt-helloworld
+  issuerRef:
+    name: letsencrypt-helloworld
+    kind: ClusterIssuer
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: hello-world-ingress
-  namespace: ingress-test
+  name: helloworld
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
-    nginx.ingress.kubernetes.io/use-regex: 'true'
     nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-helloworld
 spec:
   ingressClassName: nginx
-  defaultBackend:
-    service:
-      name: aks-helloworld
-      port:
-        number: 80
-  rules:
-    - host: $DOMAIN_NAME
-      http:
-        paths:
-          - backend:
-              service:
-                name: aks-helloworld
-                port:
-                  number: 80
-            path: /hello-world-one
-            pathType: Prefix
-          - backend:
-              service:
-                name: ingress-demo
-                port:
-                  number: 80
-            path: /hello-world-two
-            pathType: Prefix
+  tls:
+  - hosts:
+    - hello-world.rtechworld.xyz
+    secretName: letsencrypt-helloworld
+  rules:                 
+  - host: hello-world.rtechworld.xyz
+    http:
+      paths:
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: aks-helloworld
+            port:
+              number: 80
+  
